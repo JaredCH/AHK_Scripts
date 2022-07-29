@@ -1,0 +1,15 @@
+	;////////////////////////////////////////////////////////////////////////////
+	;User Declared variables
+	Repo=/JaredCH/KeyChain/ ; Repo you wish to reference
+	Version_Char_Lenth:=6   ; Length of the version format, including the 'v'
+	;End of User Declared Variables
+	;////////////////////////////////////////////////////////////////////////////
+	URL=https://github.com/%Repo%releases/latest
+	String_match=%Repo%releases/tag/
+	PageRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+	PageRequest.Open("GET", URL, True)
+	PageRequest.Send()
+	PageRequest.WaitForResponse()
+	PageText := PageRequest.ResponseText
+	FoundPos := RegExMatch(PageText, String_match)  
+	MsgBox % SubStr(PageText, FoundPos+StrLen(String_match), Version_Char_Lenth)
