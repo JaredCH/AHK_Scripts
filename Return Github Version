@@ -16,3 +16,24 @@
 		StringGetPos, endquote, PageText, `", , FoundPos
 		length:= endquote-foundpos-1
 		MsgBox % SubStr(PageText, FoundPos+11, length)
+
+
+
+same as above, but as a callable function
+
+		GetVersion(Rep)
+		{
+		URL=https://api.github.com/repos%REP%releases/latest
+		String_match=tag_name
+		PageRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		PageRequest.Open("GET", URL, True)
+		PageRequest.Send()
+		PageRequest.WaitForResponse()
+		PageText := PageRequest.ResponseText
+		FoundPos := RegExMatch(PageText, String_match)
+		StringGetPos, endquote, PageText, `", , FoundPos
+		length:= endquote-foundpos-1
+		return, SubStr(PageText, FoundPos+11, length)
+		}
+
+	msgbox, % GetVersion("/JaredCH/KeyChain/")
