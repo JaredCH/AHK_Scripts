@@ -1,39 +1,10 @@
-		;////////////////////////////////////////////////////////////////////////////
-		;////////////////////////////////////////////////////////////////////////////
-		;User Declared variables
-		Repo=/JaredCH/KeyChain/ ; Repo you wish to reference
-		;End of User Declared Variables
-		;////////////////////////////////////////////////////////////////////////////
-		;////////////////////////////////////////////////////////////////////////////
-		URL=https://api.github.com/repos%Repo%releases/latest
-		String_match=tag_name
-		PageRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		PageRequest.Open("GET", URL, True)
-		PageRequest.Send()
-		PageRequest.WaitForResponse()
-		PageText := PageRequest.ResponseText
-		FoundPos := RegExMatch(PageText, String_match)
-		StringGetPos, endquote, PageText, `", , FoundPos
-		length:= endquote-foundpos-1
-		MsgBox % SubStr(PageText, FoundPos+11, length)
+GitVersion(User, Repo) {
+    url := "https://api.github.com/repos/" User "/" Repo "/releases/latest"
+    whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    whr.Open("GET", url, false), whr.Send()
+    RegExMatch(whr.ResponseText, "_name\W+\K[^""]+", tag)
+    return tag
+}
 
-
-
-same as above, but as a callable function
-
-		GetVersion(Rep)
-		{
-		URL=https://api.github.com/repos%REP%releases/latest
-		String_match=tag_name
-		PageRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		PageRequest.Open("GET", URL, True)
-		PageRequest.Send()
-		PageRequest.WaitForResponse()
-		PageText := PageRequest.ResponseText
-		FoundPos := RegExMatch(PageText, String_match)
-		StringGetPos, endquote, PageText, `", , FoundPos
-		length:= endquote-foundpos-1
-		return, SubStr(PageText, FoundPos+11, length)
-		}
-
-	msgbox, % GetVersion("/JaredCH/KeyChain/")
+MsgBox 0x40, Version, % GitVersion("JaredCH", "KeyChain")
+MsgBox 0x40, Version, % GitVersion("Lexikos", "AutoHotkey_L")
